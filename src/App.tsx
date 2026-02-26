@@ -117,6 +117,11 @@ export default function App() {
   const t = TRANSLATIONS[lang];
 
   const handleAddAlert = () => {
+    if (!newAlertData.message.trim() || !newAlertData.messageEn.trim()) {
+      alert('Please fill in both Arabic and English messages.');
+      return;
+    }
+    
     addAlert(newAlertData);
     setShowAddAlert(false);
     setNewAlertData({
@@ -740,9 +745,27 @@ export default function App() {
                     <CheckSquare className="w-8 h-8 text-bakery-amber" />
                     Daily Tasks
                   </h3>
-                  <span className="bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-xs font-bold">
-                    {userRole}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={prioritizeTasksWithAI}
+                      disabled={isPrioritizing}
+                      className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-xs font-bold hover:bg-purple-200 transition-colors disabled:opacity-50 flex items-center gap-2"
+                    >
+                      {isPrioritizing ? (
+                        <>
+                          <span className="w-4 h-4 rounded-full border-2 border-purple-700 border-t-transparent animate-spin" />
+                          Prioritizing...
+                        </>
+                      ) : (
+                        <>
+                          ✨ AI Prioritize
+                        </>
+                      )}
+                    </button>
+                    <span className="bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-xs font-bold">
+                      {userRole}
+                    </span>
+                  </div>
                 </div>
                 <div className="space-y-4">
                   {tasks.filter(t => t.role === userRole || userRole === 'Admin').map(task => (
@@ -760,12 +783,29 @@ export default function App() {
                         {task.done ? <CheckSquare className="w-6 h-6" /> : <Square className="w-6 h-6" />}
                       </button>
                       <div className="flex-1">
-                        <p className={cn("font-bold text-lg", task.done ? "text-slate-500 line-through" : "text-slate-800")}>
-                          {lang === 'ar' ? task.title : task.titleEn}
-                        </p>
-                        {userRole === 'Admin' && (
-                          <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">Assigned to: {task.role}</p>
-                        )}
+                        <div className="flex justify-between items-start">
+                          <p className={cn("font-bold text-lg", task.done ? "text-slate-500 line-through" : "text-slate-800")}>
+                            {lang === 'ar' ? task.title : task.titleEn}
+                          </p>
+                          {task.priority && (
+                            <span className={cn(
+                              "text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider",
+                              task.priority === 'High' ? "bg-red-100 text-red-700" :
+                              task.priority === 'Medium' ? "bg-amber-100 text-amber-700" :
+                              "bg-blue-100 text-blue-700"
+                            )}>
+                              {task.priority}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex gap-3 mt-1">
+                          {userRole === 'Admin' && (
+                            <p className="text-[10px] text-slate-400 font-bold uppercase">Assigned to: {task.role}</p>
+                          )}
+                          {task.deadline && (
+                            <p className="text-[10px] text-slate-400 font-bold uppercase">Due: {task.deadline}</p>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   ))}
