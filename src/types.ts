@@ -33,5 +33,18 @@ export interface Alert {
   timestamp: Date;
 }
 
-export type TabType = 'overview' | 'live' | 'branches' | 'financials' | 'operations' | 'market';
+export type AppRole = 'Admin' | 'F&B Manager' | 'Branch Manager';
+export type TabType = 'overview' | 'live' | 'tasks' | 'branches' | 'financials' | 'operations' | 'market';
 export type Language = 'ar' | 'en';
+
+export interface Task {
+  id: number;
+  title: string;
+  titleEn: string;
+  done: boolean;
+  role: AppRole;
+  priority?: 'High' | 'Medium' | 'Low';
+  deadline?: string;
+  dependencies?: number[];
+  importanceLevel?: 'Critical' | 'High' | 'Medium' | 'Low';
+}
